@@ -1,0 +1,7 @@
+#torch==2.0.0
+#torchvision
+#triton #triton==2.0.0
+torch==1.13.1
+torchvision==0.14.1
+torchaudio==0.13.1
+git+https://github.com/kakaobrain/trident.git
