@@ -12,9 +12,10 @@ hmm... its not working.
 
 using torch 1.13.1, triton 2.1.0, trident 0.1.1
 
-The initialization is way too slow, there is an error while running.
+The initialization is way too slow, and there is an error while running.
 
 ...
+
 Train Epoch: 2 [59520/60000 (99%)]	Loss: 0.044929
 ERROR: Unexpected segmentation fault encountered in worker.
 Traceback (most recent call last):
