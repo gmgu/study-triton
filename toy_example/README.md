@@ -1,3 +1,3 @@
 | Code  | PyTorch  | Trident |
 | :---: | :------: | :-----: |
-| linear | 101.6 sec | 37.1 sec |
+| 1_linear | 37.1 sec | 101.6 sec |
