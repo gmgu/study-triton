@@ -10,4 +10,4 @@
 | Code  | PyTorch  | Trident |
 | :---: | :------: | :-----: |
 | 1_linear | 37.1 sec | 101.6 sec |
-| 2_linear_gelu | 176.2 sec | 46.2 sec |
+| 2_linear_gelu | 46.2 sec | 176.2 sec |
