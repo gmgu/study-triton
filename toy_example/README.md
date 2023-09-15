@@ -11,4 +11,4 @@
 | :---: | :------: | :-----: |
 | 1_linear | 37.1 sec | 101.6 sec |
 | 2_linear_gelu | 46.2 sec | 176.2 sec |
-| 3_train_beast_cancer | 9.6 sec | 420.6 sec |
+| 3_train_beast_cancer | 9.6 sec | 420.6 sec (first) -> 68.1 sec (second) |
