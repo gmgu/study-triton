@@ -9,13 +9,16 @@ def add_kernel(x_ptr, y_ptr, output_ptr, n_elements, BLOCK_SIZE: tl.constexpr):
   pid = tl.program_id(axis=0)
 
   block_start = pid * BLOCK_SIZE
-  offsets = block_start + tl.arange(0, BLOCK_SIZE)  # tl.arange(): 
+  offsets = block_start + tl.arange(0, BLOCK_SIZE)  # tl.arange(start, end): return contiguous values [start, ..., end)
   mask = offsets < n_elements
-  x = tl.load(x_ptr + offsets, mask=mask)  # tl.load():
+  x = tl.load(x_ptr + offsets, mask=mask)  # tl.load(pointer, mask, ...): return a tensor of data whose values are loaded from memory at location defined by pointer
+                                           # pointer could be a single element pointer, then scalar will be loaded
+                                           # pointer could be element-wise tensor of pointers
+                                           # pointer could be a block pointer defined by make_block_ptr
   y = tl.load(y_ptr + offsets, mask=mask)
   output = x + y
 
-  tl.store(output_ptr + offsets, output, mask=mask)  # tl.store():
+  tl.store(output_ptr + offsets, output, mask=mask)  # tl.store(pointer, value, mask, ...): store a tensor of data into memory locations defined by pointer
 
 
 def add(x: torch.Tensor, y: torch.Tensor):
