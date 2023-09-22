@@ -9,6 +9,8 @@ import triton.language as tl
 @torch.jit.script
 def naive_softmax(x):
   # compute row-wise softmax of matrix X, where X.shape = M, N
+  # in this implementation, the entire matrix is maxed, exped, sumed, etc,
+  # which requires a lot of memory, and thus leads to use (slow) DRAM a lot
 
   # read MN elements (X) and write M elements (x_max)
   x_max = x.max(dim=1)[0]  # values, indices = torch.max()
@@ -31,6 +33,13 @@ def naive_softmax(x):
 
 @triton.jit
 def triton_softmax_kernel(output_ptr, input_ptr, input_row_stride, output_row_stride, n_cols, BLOCK_SIZE: tl.constexpr):
+  # in this implementation, a kernel call computes the softmax result of a row.
+  # the performance gain comes from kernel fusion,
+  # which means that while processing a row, we do not write memory back to DRAM,
+  # but we use only the SRAM to the softmax of a row.
+  # this is possible when a row (or a block) is much smaller than an entire matrix.
+  # DRAM is less used compared to naive_softmax() and computations are done in SRAM
+
   row_idx = tl.program_id(0)
 
   row_start_ptr = input_ptr + row_idx * input_row_stride  # input_row_stride = N
