@@ -59,8 +59,8 @@ def jit(fn, ...):
 ...
 ```
 
-Essentially, @triton.jit defines a class JitFunction for given function with the function type T.
-For example, by stating hello_kernel[grid], we create an instance of the JitFunction class with self.fn = hello_kernel and T = grid.
+Essentially, @triton.jit defines a class JitFunction for given function fn with the function type T.
+For example, by stating hello_kernel[grid], we create an instance of the JitFunction class with fn = hello_kernel and T = grid.
 This will return JitFunction.run function due to \__getitem__ function. Then, hello_kernel\[grid\](args) is equal to JitFunction.run(grid=grid, args). In the _make_launcher() function you can check possible arguments for the JitFunction.run() function, including GPU specific arguments like num_warps.
 
 ## Example of @triton.jit
@@ -102,4 +102,30 @@ grid = lambda meta: (1, )
 print_hello[grid]()
 ```
 
+
+## Calling Triton kernel in another way.
+
+We can seperate the kernel call by two stages.
+1. get function by fn = hello_kernel\[grid\]
+2. call the function by fn(num_warps=1)
+
+```bash
+import torch
+import triton
+
+
+@triton.jit
+def hello_kernel():
+    print("Hello Triton Kernel!")
+
+
+torch.rand(1, device='cuda')  # for valid cuda resource handle
+
+# we can also call the function like this!
+grid = lambda meta: (1, )  # just like before
+fn = hello_kernel[grid]  # hello_kernel[grid] returns a JitFunction.run function
+fn(num_warps=1)  # and we call it!
+```
+
+Nevertheless, I think func\[grid\]() syntax is more appropriate to use because it has a correspondense with func<<<...>>>() syntax of CUDA C++.
 
