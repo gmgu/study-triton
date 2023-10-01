@@ -5,4 +5,4 @@
 - torch==1.13.1
 - triton==2.1.0
 - trident==0.1.1
-
+- tabulate==0.9.0
