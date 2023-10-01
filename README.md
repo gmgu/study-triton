@@ -4,4 +4,4 @@ This repository is for studying Kakao Brain's Trident, which is an efficient lib
 
 ## Contents
 
-- 1_hello_triton: 
+- 1_hello_triton: a kernel that prints "Hello Triton Kernel!". explains func\[grid\]() syntax.
