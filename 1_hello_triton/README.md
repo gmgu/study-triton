@@ -1,9 +1,9 @@
 ## What is Triton
-Triton is python library for GPU programming.
+Triton is a python library for GPU programming.
 It is similar to the CUDA C++ language. In this lecture, we will learn how to code Triton program.
 
 ## A Triton kernel that prints "Hello Triton Kernel!"
-Let's write a simple python script that print "Hello Triton Kernel!" using Triton.
+Let's write a simple python script that prints "Hello Triton Kernel!" using Triton.
 
 ```bash
 import torch
@@ -21,13 +21,14 @@ hello_kernel[grid](num_warps=1)  # 1 warp has 32 threads
 ```
 
 If you run this code, you will see 32 prints of "Hello Triton Kernel!".
+We note that torch.rand is required only for the cuda recource handle.
 
 ## CUDA C++ vs Triton
 In CUDA C++, a kernel is executed n times in parallel by n threads. A grid of the kernel consists of NB blocks, where each block consists of NT threads and NB * NT = n.
 
-Similarly, in Triton, a grid of a kernel consists of NB blocks (1 in the example), where each block consists of num_warps * 32 threads.
+Similarly in Triton, a grid of a kernel consists of NB blocks, where each block consists of num_warps * 32 threads.
 
-In the "Hello Triton Kernel!" example, we set the number of blocks to 1 and num_warps to 1. Since there are 32 threads in a warp, there are 32 threads in total in the grid. Therefore, the kernel is executed 32 times by 32 threads.
+In the "Hello Triton Kernel!" example, we set the number of blocks to 1 and num_warps to 1, and thus there are total 32 threads in the grid. Therefore, the kernel is executed 32 times by 32 threads.
 
 
 ## What is @triton.jit (and function\[grid\]() syntax)
@@ -58,13 +59,13 @@ def jit(fn, ...):
 ...
 ```
 
-Essentially, @triton.jit defines a class JitFunction for hello_kernel function with the function type T = grid.
-By hello_kernel[grid], you create an instance of the class with T = grid.
-This will return JitFunction.run function due to __getitem__ function (i.e., hello_kernel[grid] invokes KernelInterface.__getitem__(grid)). Then, hello_kernel\[grid\](args) is equal to JitFunction.run(grid=grid, args). In the _make_launcher() function you can check the arguments possible for the JitFunction.run() function, including GPU specific arguments like num_warps.
+Essentially, @triton.jit defines a class JitFunction for given function with the function type T.
+For example, by stating hello_kernel[grid], we create an instance of the JitFunction class with self.fn = hello_kernel and T = grid.
+This will return JitFunction.run function due to \__getitem__ function. Then, hello_kernel\[grid\](args) is equal to JitFunction.run(grid=grid, args). In the _make_launcher() function you can check possible arguments for the JitFunction.run() function, including GPU specific arguments like num_warps.
 
-## Example for @triton.jit
+## Example of @triton.jit
 Here is another version of @triton.jit decorator for demonstration.
-We defined @python_jit decorator that defines JitFunction class. By calling print_hello\[grid\](), we instantiate JitFunction class (due to print_hello\[grid\]), get JitFunction.run function (due to overloading __getitem__) which is print_hello, and call JitFunction.run function will execute given function (due to round brackets).
+We defined @python_jit decorator that defines JitFunction class. By calling print_hello\[grid\](), we instantiate JitFunction class (due to print_hello\[grid\]), get JitFunction.run function (due to overloading \__getitem__), and call JitFunction.run function (due to round bracket). Then, JitFunction.run will call the given function of print_hello.
 
 ```bash
 import functools
