@@ -1,6 +1,6 @@
-## How to input and output tensors to/from kernel
+## How to input/output tensors to/from kernel
 In this lecture, we learn how to give an input tensor to a kernel and get an output tensor from a kernel.
-Similar to the CUDA kernel, Triton kernel gets input and return output via argument.
+Similar to the CUDA kernel, Triton kernel gets input and returns output via argument.
 One major difference is that arguments of triton.jit'd function are implicitly converted to pointers if they have a .data_ptr() method and a .dtype attribute (Torch.Tensor has both .data_ptr() and .dtype). data_ptr() returns the address of the first element of the tensor. dtype is the data type of the tensor (e.g., torch.float32). 
 
 
@@ -14,7 +14,7 @@ import triton.language as tl
 
 @triton.jit
 def copy_kernel(in_ptr, out_ptr, n: tl.constexpr):
-    offsets = tl.arange(0, n)   # 0, 1, 2, ... 7  (here, n must be power of 2 for tl.range)
+    offsets = tl.arange(0, n)   # 0, 1, 2, ... 7  (here, n must be power of 2 for tl.arange)
     x = tl.load(in_ptr + offsets)  # load data (that pointer arrays are pointing) to x
     y = tl.store(out_ptr + offsets, x)  # save x to memory where pointer arrays are pointing
 
@@ -33,7 +33,7 @@ Regarding copy_kernel(), in_ptr (corr. out_ptr) is the address of the first elem
 
 
 ## Let's do the same job in parallel
-In the following script, we have 8 blocks, where each block is an area that a thread should process, and each block corresponds to one array position. We can get the program id (thread id) by triton.language.program_id() function, in which we can specify the axis of the 3D launch grid. Since we are dealing with 1D array, axis=0. Also, special efforts need to be done to avoid out of index problem. 
+In the following script, we have 8 blocks, where each block is an area that a thread should process, and each block corresponds to one array position. We can get the program id (thread id) by triton.language.program_id() function, in which we can specify the axis of the 3D launch grid. Since we are dealing with 1D array, axis=0. Now, each thread access distinct data point using the program id. Also, special efforts needed to be done to avoid out of index problem (see mask).
 
 ```bash
 import torch

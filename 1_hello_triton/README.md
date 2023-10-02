@@ -26,7 +26,7 @@ We note that torch.rand is required only for the cuda recource handle.
 ## CUDA C++ vs Triton
 In CUDA C++, a kernel is executed n times in parallel by n threads. A grid of the kernel consists of NB blocks, where each block consists of NT threads and NB * NT = n.
 
-In Triton, a grid of a kernel consists of NB blocks. Each thread process one block (so, the meaning of 'block' in Triton is different from that in CUDA). GPU can compute multiple threads ,num_warps * 32 threads, in parallel.
+In Triton, a grid of a kernel consists of NB blocks. Each thread process one block (so, the meaning of 'block' in Triton is different from that in CUDA). GPU can compute multiple threads, num_warps * 32 threads, in parallel.
 
 In the "Hello Triton Kernel!" example, we set the number of blocks to 1 and num_warps to 1, and thus the kernel is executed 32 times by 32 threads.
 
