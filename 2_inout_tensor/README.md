@@ -57,7 +57,7 @@ out_tensor = torch.empty_like(in_tensor)
 print('Input: ', in_tensor)
 print('Output before call: ', out_tensor)
 
-grid = lambda meta: (8, )  # there are 8 blocks need to be processed, where 1 block is 1 position.
+grid = lambda meta: (8, )  # there are 8 blocks needed to be processed, where 1 block is 1 position.
 copy_kernel[grid](in_tensor, out_tensor, len(in_tensor), BLOCK_SIZE=1)
 print('Output after call: ', out_tensor)
 ```
