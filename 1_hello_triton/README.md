@@ -16,7 +16,7 @@ def hello_kernel():
 
 
 torch.rand(1, device='cuda')  # for valid cuda resource handle
-grid = lambda meta: (1, )  # number of blocks
+grid = lambda meta: (1, )  # how many blocks do we need to process
 hello_kernel[grid](num_warps=1)  # 1 warp has 32 threads
 ```
 
@@ -26,9 +26,9 @@ We note that torch.rand is required only for the cuda recource handle.
 ## CUDA C++ vs Triton
 In CUDA C++, a kernel is executed n times in parallel by n threads. A grid of the kernel consists of NB blocks, where each block consists of NT threads and NB * NT = n.
 
-Similarly in Triton, a grid of a kernel consists of NB blocks, where each block consists of num_warps * 32 threads.
+In Triton, a grid of a kernel consists of NB blocks. Each thread process one block (so, the meaning of 'block' in Triton is different from that in CUDA). GPU can compute multiple threads ,num_warps * 32 threads, in parallel.
 
-In the "Hello Triton Kernel!" example, we set the number of blocks to 1 and num_warps to 1, and thus there are total 32 threads in the grid. Therefore, the kernel is executed 32 times by 32 threads.
+In the "Hello Triton Kernel!" example, we set the number of blocks to 1 and num_warps to 1, and thus the kernel is executed 32 times by 32 threads.
 
 
 ## What is @triton.jit (and function\[grid\]() syntax)

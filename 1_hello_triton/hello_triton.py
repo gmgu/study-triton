@@ -8,5 +8,5 @@ def hello_kernel():
 
 
 torch.rand(1, device='cuda')  # for valid cuda resource handle
-grid = lambda meta: (1, )  # number of blocks
+grid = lambda meta: (1, )  # how many blocks do we need to process
 hello_kernel[grid](num_warps=1)  # 1 warp has 32 threads
