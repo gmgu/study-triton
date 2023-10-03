@@ -6,7 +6,7 @@ Triton provides the exact library for performance comparision.
 
 ## Example: performances of PyTorch copy methods
 In thie example, we will compare copy methods provided by PyTorch. Let x and y be PyTorch tensors. We want to copy x to y.
-There are mainly four ways to do this.
+There are mainly three ways to do this.
 - y = x.clone().detach()
 - y = torch.empty_like(x).copy\_(x)
 - y = torch.tensor(x)
