@@ -59,6 +59,7 @@ torch.manual_seed(9)
 compare.run(show_plots=True, print_data=True)  # compare.run always show plots and then print data. defaults are false.
 ```
 
+## @triton.testing.perf_report
 @triton.testing.perf_report defines a Mark class with given function and triton.testing.Benchmark object, where Benchmark specifies benchmarking configuration.
 
 ```bash
@@ -66,13 +67,17 @@ def perf_report(benchmarks):
     return lambda fn: Mark(fn, benchmarks)
 ```
 
+## triton.testing.Mark
 Mark is a class for executing fn, collecting results, ad printing results using matplotlib.pyplot and pandas.
 We can start the performance measureing by calling Mark.run() method.
 Note that we can also save results to plot_name.png (for image), results.html (showing the image), plot_name.csv (for data) by setting Mark.run(save_path).
 
 
+## triton.testing.Benchmark
 Benchmark specifies inputs of the function by x_names and x_vals. Since input parameter can be more than one, x_names is a list to string. x_vals can be a list or lists of list (for the case when len(x_names) > 1). We can speficy different methods by line_arg. Note that line_arg is a string and not a list of strings. Mark.run will loop through line_vals and x_vals. The rest of the parameters are for ploting.
 
+
+## triton.testing.do_bench
 triton.testing.do_bench(fn, quantiles, return_mode) executes fn multiple times (including warmups that are not counted in the results). If we specify quantiles, it should be ordered triple of (mean, min, max) because Mark.run considers only that type of results. Note that getattr(torch, "mean")(times) is exactly the same as torch.mean(times). do_bench can be summarized as follows.
 
 ```bash
