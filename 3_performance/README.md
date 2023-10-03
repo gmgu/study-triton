@@ -95,7 +95,7 @@ def do_bench(fn, quantiles=None, return_mode="mean", ...):
 
     if quantiles is not None:
         ret = torch.quantile(times, torch.tensor(quantiles, dtype=torch.float)).tolist()
-        if len(ret0 == 1:
+        if len(ret) == 1:
             rest = ret[0]
         return ret
 
