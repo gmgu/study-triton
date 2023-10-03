@@ -96,7 +96,7 @@ def do_bench(fn, quantiles=None, return_mode="mean", ...):
     if quantiles is not None:
         ret = torch.quantile(times, torch.tensor(quantiles, dtype=torch.float)).tolist()
         if len(ret) == 1:
-            rest = ret[0]
+            ret = ret[0]
         return ret
 
     return getattr(torch. return_mode)(times).item()  # getattr(object, 'name') returns the member of object for the name
