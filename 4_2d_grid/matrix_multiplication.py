@@ -15,8 +15,8 @@ def triton_mm(x_ptr, y_ptr, out_ptr, n: tl.constexpr, m: tl.constexpr, p: tl.con
     # x: n x m, y: m x p, out: n x p
     # a naive implementation: each thread computes out[bs0...bs0 + BLOCK_SIZE][bs1...bs1 + BLOCK_SIZE]
     #                         = x[bs0...bs0 + BLOCK_SIZE][:] * y[:][bs1...bs1 + BLOCK_SIZE]
-    pid0 = tl.program_id(axis=0)  # start of i
-    pid1 = tl.program_id(axis=1)  # start of j
+    pid0 = tl.program_id(axis=0)
+    pid1 = tl.program_id(axis=1)
 
     x_row = pid0 * BLOCK_SIZE * m + tl.arange(0, m)
     x_col = tl.arange(0, BLOCK_SIZE) * m
