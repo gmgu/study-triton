@@ -107,11 +107,11 @@ print(torch.allclose(out_torch, out_triton))
 compare.run(show_plots=True, print_data=True)
 ```
 
-## triton.language.constexpr
+## class triton.language.constexpr
 constexpr is a class in Triton that is used to store a value that is known at compile-time. Some functions in Triton gets input of type constexpr.
 
 
-## triton.language.core.full
+## triton.language.core.full()
 triton.language.core.full is a builtin function that returns a tensor filled with the scalar value for the given shape and dtype. The tensor class in Triton is different to the tensor in PyTorch, and they are not compatible. That is you cannot add a PyTorch tensor to a Triton tensor. Each dimention of shape must be int or constexpr[int]. In semantic.full(), only size-1 tensor or scalar is accepted for value, and dtype must be specified when value is not a tensor.
 ```bash
 def full(shape, value, dtype, _builder):
@@ -122,22 +122,7 @@ def full(shape, value, dtype, _builder):
 ```
 
 
-## broadcasting
-Broadcasting semantics.
-1. Padding: the shape of the shortest operand is left-padded with ones until both operands have the same dimensionality.
-2. Broadcasting: the content of both operands is replicated as many times as neede until their shape is identical; an error is emitted if this cannot be done.
-
-```bash
-int a[2] = {1, 2}
-int b[4, 2] = {{3, 4}, {5, 6}, {7, 8}, {9, 10}}
-
-int c[4, 2] = a + b
-// 1. the shape of the a is left-padded with ones: a[1, 2] = {{1, 2}}
-// 2. the content of a is replicated: a[4, 2] = {{1, 2}, {1, 2}, {1, 2}, {1, 2}}
-
-```
-
-## triton.language.core.dot
+## triton.language.core.dot()
 triton.language.core.dot() returns the matrix product of two blocks.
 The two blocks must be two dimentional, shape compatible (i.e., lhs.shape[1].value == rhs.shape[0].value), all values in both first input shape and second input shape must be >=16, 
 
