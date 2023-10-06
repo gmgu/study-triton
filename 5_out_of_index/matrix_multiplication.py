@@ -1,13 +1,3 @@
-## Control the out of index problem
-In thie lecture, we learn how to handle out of index problem when dividing matrix into blocks.
-
-## Example: matrix multiplication with 3D parallelism
-In the following script, we compute matrix multiplication with 3D parallelims.
-That is, we split rows of X, columns of Y, and each element of a row (or a column) so that the minimum dot product computes matrix multiplication of (B, B) x (B, B), where B is the BLOCK_SIZE.
-Each thread computes the output block as we did in lecture 4, but we loop through tl.cdiv(m, BLOCK_SIZE) and compute the results by accumulating the results of mini blocks.
-This approach allow us to increase the BLOCK_SIZE which leads to increased performance when the input matrices are big.
-
-```bash
 import torch
 import triton
 import warnings
@@ -117,48 +107,3 @@ print(torch.allclose(out_torch, out_triton))
 
 # performance measure
 compare.run(show_plots=True, print_data=True)
-```
-
-We maintain a (B, B) block for X (and Y) and two component tensors row_start and col_start, where adding the two tensors creates the block.
-Maintaing the two tensors are neccesary for computing masks, especially because Triton is not yet supporting tensor slicing.
-(so we cannot derive the two tensors from the block)
-
-To handle the out of index problem, we set mask in tl.load and tl.store to tensors of the same shape with data such that each element indicates whether the index of the element is valid or not.
-In tl.load, if a element of mask is false, then the corresponding index is filled with value specified in other.
-
-
-## triton.cdiv and triton.language.cdiv
-If a row (or column) of length n is divided by BLOCK_SIZE, we set the number of threads to n / BLOCK_SIZE. But if a row is not divided by BLOCK_SIZE, we need to set the number of threads to n / BLOCK_SIZE + 1. triton.cdiv does exactly this job.
-Note that triton.cdiv and triton.language.cdiv are different. 
-
-```bash
-# in triton
-def cdiv(x: int, y: int):
-    return (x + y - 1) // y
-
-# in triton.language
-@jit
-def cdiv(x, div):
-    return (x + div - 1) // div
-```
-
-If x % y == 0, then x = k * y, where k is a positive integer. triton.cdiv then returns (x + y - 1) // y = ((k + 1) * y - 1) // y = k.
-
-If x % y != 0, then x = (k - 1) * y + z, where k and z are two positive integers such that 2 <= k and 1 <= z < y. triton.cdiv then returns (x + y - 1) // y = (k * y + z - 1) // y. Since 1 <= z < y, we have 0 <= z - 1 < y - 1. Thus, (k * y + z - 1) // y = k. (Note that -1 is useful for handling the first case: x % y == 0, and does not affect the second case: x % y != 0).
-
-
-## broadcasting
-Broadcasting semantics.
-1. Padding: the shape of the shortest operand is left-padded with ones until both operands have the same dimensionality.
-2. Broadcasting: the content of both operands is replicated as many times as neede until their shape is identical; an error is emitted if this cannot be done.
-
-```bash
-int a[2] = {1, 2}
-int b[4, 2] = {{3, 4}, {5, 6}, {7, 8}, {9, 10}}
-
-int c[4, 2] = a + b
-// 1. the shape of the a is left-padded with ones: a[1, 2] = {{1, 2}}
-// 2. the content of a is replicated: a[4, 2] = {{1, 2}, {1, 2}, {1, 2}, {1, 2}}
-
-```
-
