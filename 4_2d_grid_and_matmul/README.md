@@ -107,26 +107,40 @@ print(torch.allclose(out_torch, out_triton))
 compare.run(show_plots=True, print_data=True)
 ```
 
-
-## triton.cdiv
-```bash
-```
-
 ## triton.language.constexpr
-class
+constexpr is a class in Triton that is used to store a value that is known at compile-time. Some functions in Triton gets input of type constexpr.
 
 
 ## triton.language.core.full
+triton.language.core.full is a builtin function that returns a tensor filled with the scalar value for the given shape and dtype. The tensor class in Triton is different to the tensor in PyTorch, and they are not compatible. That is you cannot add a PyTorch tensor to a Triton tensor. Each dimention of shape must be int or constexpr[int]. In semantic.full(), only size-1 tensor or scalar is accepted for value, and dtype must be specified when value is not a tensor.
+```bash
+def full(shape, value, dtype, _builder):
+    shape = _shape_check_impl(shape)  # assert all dimentions are in type constexpr[int] or int and return an integer array.
+    value = _constexpr_to_value(value)  # returns constexpr.value (i.e., value.value) if isinstance(value, constexpr). otherwise return identity (i.e., value).
+    dtype = _constexpr_to_value(dtype)
+    return semantic.full(shape, value, dtype, _builder)
+```
 
 
 ## broadcasting
-tensor addition
+Broadcasting semantics.
+1. Padding: the shape of the shortest operand is left-padded with ones until both operands have the same dimensionality.
+2. Broadcasting: the content of both operands is replicated as many times as neede until their shape is identical; an error is emitted if this cannot be done.
 
-## triton.dot
-allow_tf32
+```bash
+int a[2] = {1, 2}
+int b[4, 2] = {{3, 4}, {5, 6}, {7, 8}, {9, 10}}
 
-16
+int c[4, 2] = a + b
+// 1. the shape of the a is left-padded with ones: a[1, 2] = {{1, 2}}
+// 2. the content of a is replicated: a[4, 2] = {{1, 2}, {1, 2}, {1, 2}, {1, 2}}
 
-indexing impossible
+```
 
-## block size and shared memory
+## triton.language.core.dot
+triton.language.core.dot() returns the matrix product of two blocks.
+The two blocks must be two dimentional, shape compatible (i.e., lhs.shape[1].value == rhs.shape[0].value), all values in both first input shape and second input shape must be >=16, 
+
+tf32 is tensor float 32 format for float point representaion. The general fp32 format uses 1 bit for sign, 8 bits for range, and 23 bits for precision. fp16 format uses 1 bit for sign, 5 bits for range, and 10 bits for precision. Google Brain's bfloat16 format uses 1 bit for sign, 8 bits for range (same as fp32), and 7 bits for precision. tf32 format uses 1 bit for sign, 8 bits for range (same as fp32), and 10 bits for precision (same as fp16). tf32 uses 19 bits in total (so it is fast), has the same range as fp32 and bf16 (so it does not need scaling), has the same precision as fp16 (so it is accurate enough).
+
+In default, allow_tf32 is True in the triton.language.core.dot(). In PyTorch, allow_tf32 flag is True in default from PyTorch 1.7 to PyTorch 1.11, and false in default from PyTorch 1.12. Therefore, the results of dot product computed by Triton may be differnt with that computd by PyTorch depending on the versions.
