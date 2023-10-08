@@ -61,7 +61,7 @@ def rand(seed, offset, n_rounds: tl.constexpr = N_ROUNDS_DEFAULT):
     return uint32_to_uniform_float(source)
 ```
 
-uin32_to_uniforM_float() function converts a random uint32 into a random float uniformly sampled in [0, 1).
+uin32_to_uniform_float() function converts a random uint32 into a random float uniformly sampled in [0, 1).
 ```bash
 @jit
 def uint32_to_uniform_float(x):
