@@ -4,6 +4,20 @@ pybind11 is a library for calling C++ libary from python and vice versa.
 ## Example: Call add function written in C++ from Python
 ```bash
 // my_module.cpp
+#include <pybind11/pybind11.h>
+
+int mul(int x, int y) {
+    return x * y;
+}
+
+int add(int x, int y) {
+    return x + y;
+}
+
+float add(float x, float y) {
+    return x + y;
+}
+
 namespace py = pybind11;
 
 PYBIND11_MODULE(my_cpp_module, m) {
@@ -19,7 +33,7 @@ setup.py
 ```
 
 ```bash
-// main.py
+# main.py
 import my_cpp_module
 
 result = my_cpp_module.mul(3, 3)
@@ -35,12 +49,6 @@ result = my_cpp_module.subtract(11, 2)
 print(result)
 ```
 
-## Usage
-```bash
-pip install .
-python main.py
-```
-### Result
 ```bash
 9
 9
@@ -48,21 +56,27 @@ python main.py
 9
 ```
 
+## Usage
+```bash
+pip install .
+python main.py
+```
+
 
 ## PYBIND11_MODULE(name, variable)
-This macro crates the entry point that will be invoked when the Python interpreter imports an extension module. The module name is given as the first argument (name) and it should not be in quotes. The second macro argument defines a variable of type py::modulei\_ which can be used to initialize the module.
+This macro crates the entry point that will be invoked when the Python interpreter imports an extension module. The module name is given as the first argument (name) and it should not be in quotes. The second macro argument defines a variable of type py::module\_ which can be used to initialize the module.
 
 ### class module\_ : public object
 Wrapper for Python extension modules.
 
-***class hierarchy ***
+**class hierarchy**
 ```bash
 class object: public handle
 // holds a reference to a Python object (with reference counting)
     inline object(const object &o)  // copy constructor. always increases the reference count
     inline object(object &&other) noexcept  // move constructor. steals the object from other and preserves its reference count
     infline ~object()  // destructor. automatically calls handle::dec_ref()
-    infline handle release()  // resets the internal pointer to nullptr without decreasing the object's reference count. the function returns a raw handle to the original Pytho object.
+    infline handle release()  // resets the internal pointer to nullptr without decreasing the object\'s reference count. the function returns a raw handle to the original Pytho object.
 
 class handle: public detail::object_api<handle>
 // holds a reference to a Python object (no reference counting)
@@ -77,7 +91,7 @@ class object_api: public pyobject_tag
     str_attr_accessor doc() const  // get or set the object's docstring, i.e., obj.__doc__
 ```
 
-***Public Functions***
+**Public Functions**
 ```bash
 class module_: public object
     template<typename Func, typename ...Extra>
