@@ -2,8 +2,8 @@
 pybind11 is a library for calling C++ libary from python and vice versa.
 
 ## Example: Call add function written in C++ from Python
+### my_module.cpp
 ```bash
-// my_module.cpp
 #include <pybind11/pybind11.h>
 
 int mul(int x, int y) {
@@ -28,12 +28,12 @@ PYBIND11_MODULE(my_cpp_module, m) {
 }
 ```
 
+### setup.py
 ```bash
-setup.py
 ```
 
+### main.py
 ```bash
-# main.py
 import my_cpp_module
 
 result = my_cpp_module.mul(3, 3)
@@ -49,17 +49,18 @@ result = my_cpp_module.subtract(11, 2)
 print(result)
 ```
 
+### Usage
+```bash
+pip install .
+python main.py
+```
+
+### Result
 ```bash
 9
 9
 9.0
 9
-```
-
-## Usage
-```bash
-pip install .
-python main.py
 ```
 
 
@@ -76,7 +77,7 @@ class object: public handle
     inline object(const object &o)  // copy constructor. always increases the reference count
     inline object(object &&other) noexcept  // move constructor. steals the object from other and preserves its reference count
     infline ~object()  // destructor. automatically calls handle::dec_ref()
-    infline handle release()  // resets the internal pointer to nullptr without decreasing the object\'s reference count. the function returns a raw handle to the original Pytho object.
+    infline handle release()  // resets the internal pointer to nullptr without decreasing the reference count of the object. the function returns a raw handle to the original Pytho object.
 
 class handle: public detail::object_api<handle>
 // holds a reference to a Python object (no reference counting)
