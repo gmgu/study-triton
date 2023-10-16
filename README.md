@@ -10,6 +10,6 @@ This repository is for studying Kakao Brain's Trident, which is an efficient lib
 - 4_2d_grid_and_matmul: a kernel that computes matrix multiplication. 
 - 5_out_of_index: how to handle out of index problem with an example of matrix multiplication.
 - 6_random: using random seed in triton.jit'd function with an example of random tensor initialization.
+- 7_pybind11: how to use C++ code in Python
 
 ## To be writen
-- 7_pybind11: how to use C++ code in Python
