@@ -4,10 +4,12 @@ pybind11 is a library for calling C++ libary from python and vice versa.
 ## Example: Call add function written in C++ from Python
 ### my_module.cpp
 We define four simple math functions, where addition has two overloaded versions for int and float types, 
-and subtraction is a lambda function. We pass the function pointer for a plain C++ function. 
+and subtraction is a lambda function. The overloaded version for float type is compiled if and only if FLOAT_COMPATIBLE is defined.
+We pass the function pointer for a plain C++ function. 
 We use a special `pybind11::overload_cast<>()` function for overloaded functions.
 ```bash
 #include <pybind11/pybind11.h>
+
 
 int mul(int x, int y) {
     return x * y;
@@ -17,16 +19,21 @@ int add(int x, int y) {
     return x + y;
 }
 
+// FLOAT_COMPATIBLE is defined in setup.py
+#ifdef FLOAT_COMPATIBLE
 float add(float x, float y) {
     return x + y;
 }
+#endif
 
 namespace py = pybind11;
 
 PYBIND11_MODULE(my_cpp_module, m) {
     m.def("mul", &mul);                                     // plain C++ function
     m.def("add", py::overload_cast<int, int>(&add));        // overloaded function
+#ifdef FLOAT_COMPATIBLE
     m.def("add", py::overload_cast<float, float>(&add));    // overloaded function
+#endif
     m.def("subtract", [](int x, int y) { return x - y; });  // lambda function
 }
 ```
@@ -34,6 +41,7 @@ PYBIND11_MODULE(my_cpp_module, m) {
 ### setup.py
 We can build the C++ source code using `setuptools`.
 The C++ source code is built while installing the package by `pip install .`.
+Note that we define FLOAT_COMPATIBLE macro here.
 
 ```bash
 from setuptools import setup
