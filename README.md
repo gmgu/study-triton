@@ -1,4 +1,4 @@
-# study-trident
+# study-triton
 This repository is for studying OpenAI's Triton. 
 
 
